@@ -1,0 +1,83 @@
+import numpy as np
+
+# Initialize the game board
+board = np.zeros((6, 7), int)
+
+# Function to print the game board
+def print_board(board):
+    for row in reversed(range(6)):
+        for col in range(7):
+            print(board[row][col], end=' ')
+        print()
+
+# Function to check if a player has won
+def check_win(board, player):
+    # Check for horizontal win
+    for row in range(6):
+        for col in range(4):
+            if board[row][col] == player and board[row][col+1] == player and board[row][col+2] == player and board[row][col+3] == player:
+                return True
+
+    # Check for vertical win
+    for row in range(3):
+        for col in range(7):
+            if board[row][col] == player and board[row+1][col] == player and board[row+2][col] == player and board[row+3][col] == player:
+                return True
+
+    # Check for diagonals (positive slope) win
+    for row in range(3):
+        for col in range(4):
+            if board[row][col] == player and board[row+1][col+1] == player and board[row+2][col+2] == player and board[row+3][col+3] == player:
+                return True
+
+    # Check for diagonals (negative slope) win
+    for row in range(3, 6):
+        for col in range(4):
+            if board[row][col] == player and board[row-1][col+1] == player and board[row-2][col+2] == player and board[row-3][col+3] == player:
+                return True
+
+    return False
+
+# Function to play the game
+def play_game():
+    current_player = 1
+    game_over = False
+
+    while not game_over:
+        # Print the board
+        print_board(board)
+
+        # Get player's move
+        col = int(input(f"Player {current_player}, choose a column: ")) - 1
+
+        # Check if the chosen column is valid
+        if col < 0 or col >= 7 or board[5][col] != 0:
+            print("Invalid move. Try again.")
+            continue
+
+        # Find the empty row in the chosen column
+        row = 0
+        while row < 6 and board[row][col] == 0:
+            row += 1
+        row -= 1
+
+        # Place the player's piece on the board
+        board[row][col] = current_player
+
+        # Check if the player has won
+        if check_win(board, current_player):
+            print_board(board)
+            print(f"Player {current_player} wins!")
+            game_over = True
+
+        # Check if the game ends in a draw
+        elif np.count_nonzero(board == 0) == 0:
+            print_board(board)
+            print("It's a draw!")
+            game_over = True
+
+        # Switch to the other player
+        current_player = 2 if current_player == 1 else 1
+
+# Start the game
+play_game()
